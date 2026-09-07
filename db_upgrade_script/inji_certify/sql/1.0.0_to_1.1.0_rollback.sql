@@ -10,12 +10,12 @@
 -- (if any) each existing NULL row should take. Run the two SELECTs below first to see if any
 -- rollback-blocking rows exist before proceeding manually.
 
--- SELECT config_id FROM certify.credential_config WHERE cryptographic_binding_methods_supported IS NULL;
--- SELECT config_id FROM certify.credential_config WHERE proof_types_supported IS NULL;
+SELECT config_id FROM certify.credential_config WHERE cryptographic_binding_methods_supported IS NULL;
+SELECT config_id FROM certify.credential_config WHERE proof_types_supported IS NULL;
 
 -- Once reviewed and only if you are certain no config relies on the "absent" semantics,
 -- uncomment and run manually:
--- UPDATE certify.credential_config SET cryptographic_binding_methods_supported = ARRAY[]::TEXT[] WHERE cryptographic_binding_methods_supported IS NULL;
--- UPDATE certify.credential_config SET proof_types_supported = '{}'::jsonb WHERE proof_types_supported IS NULL;
--- ALTER TABLE certify.credential_config ALTER COLUMN cryptographic_binding_methods_supported SET NOT NULL;
--- ALTER TABLE certify.credential_config ALTER COLUMN proof_types_supported SET NOT NULL;
+UPDATE certify.credential_config SET cryptographic_binding_methods_supported = ARRAY[]::TEXT[] WHERE cryptographic_binding_methods_supported IS NULL;
+UPDATE certify.credential_config SET proof_types_supported = '{}'::jsonb WHERE proof_types_supported IS NULL;
+ALTER TABLE certify.credential_config ALTER COLUMN cryptographic_binding_methods_supported SET NOT NULL;
+ALTER TABLE certify.credential_config ALTER COLUMN proof_types_supported SET NOT NULL;
