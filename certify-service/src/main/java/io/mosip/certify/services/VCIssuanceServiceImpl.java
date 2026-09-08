@@ -49,9 +49,6 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
     private ProofValidatorFactory proofValidatorFactory;
 
     @Autowired
-    private HolderBindingEvaluator holderBindingEvaluator;
-
-    @Autowired
     private VCICacheService vciCacheService;
 
     @Autowired
@@ -85,22 +82,12 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
             throw new CertifyException(VCIErrorConstants.INVALID_SCOPE);
         }
 
-        // 3. Determine whether holder binding (and therefore proof validation) is required based on issuer metadata for the resolved credential configuration.
         String clientId = (String) parsedAccessToken.getClaims().get(Constants.CLIENT_ID);
         String accessTokenHash = parsedAccessToken.getAccessTokenHash();
-        boolean holderBindingRequired = holderBindingEvaluator.isHolderBindingRequired(credentialConfigurationSupported);
 
-        if (!holderBindingRequired) {
-            // Issuer does not advertise holder binding support: skip proof validation entirely  and issue a single credential without holder-specific binding information.
-            log.info("Holder binding is not required for credential_configuration_id [{}]; skipping proof validation.",
-                    credentialRequest.getCredentialConfigId());
-            vcResults.add(getVerifiableCredential(credentialConfigurationSupported, null));
-        } else {
-            // 4. Proof Validation (unchanged existing flow, only entered when holder binding is required)
-            if (credentialRequest.getProofs() == null || credentialRequest.getProofs().isEmpty()) {
-                throw new CertifyException(VCIErrorConstants.INVALID_PROOF,
-                        "Holder binding is required for this credential configuration; proofs must be provided.");
-            }
+        if (credentialRequest.getProofs() == null || credentialRequest.getProofs().isEmpty()) {
+            throw new CertifyException(VCIErrorConstants.INVALID_PROOF);
+        }
             Map<String, Object> supportedProofTypes = credentialConfigurationSupported.getProofTypesSupported();
             Map<ProofType, Set<String>> proofs = credentialRequest.getProofs()
                     .entrySet()
@@ -149,7 +136,6 @@ public class VCIssuanceServiceImpl implements VCIssuanceService {
             for (String holderId : holderIds) {
                 vcResults.add(getVerifiableCredential(credentialConfigurationSupported, holderId));
             }
-        }
 
         auditWrapper.logAudit(Action.VC_ISSUANCE, ActionStatus.SUCCESS,
                 AuditHelper.buildAuditDto(accessTokenHash, "accessTokenHash"), null);
