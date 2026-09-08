@@ -303,7 +303,7 @@ public class CertifyIssuanceServiceImpl implements VCIssuanceService {
             // org.json.JSONObject#put removes the key when value is null, so a null holderId correctly results in "_holderId" being absent downstream
             jsonObject.put("_holderId", holderId);
             templateParams.putAll(jsonObject.toMap());
-            // The credential id attribute represents holder-bound issuance; only generate it when a holderId was established via proof validation.
+            // The CredentialSubject.id  attribute represents holder-bound issuance; only generate it when a holderId was established via proof validation.
             if (holderId != null && !StringUtils.isEmpty(idPrefix)) {
                 templateParams.put(VCDMConstants.CREDENTIAL_ID, idPrefix + UUID.randomUUID());
             }
