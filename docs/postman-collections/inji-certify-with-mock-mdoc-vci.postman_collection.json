@@ -730,6 +730,118 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Optional Holder Binding",
+			"item": [
+				{
+					"name": "Add New Config - No Holder Binding (Optional Binding Demo)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"vcTemplate\": \"ewogICJuYW1lU3BhY2VzIjogewogICAgIm9yZy5pc28uMTgwMTMuNS4xIjogWwogICAgICB7CiAgICAgICAgImRpZ2VzdElEIjogMCwKICAgICAgICAiZWxlbWVudElkZW50aWZpZXIiOiAiZmFtaWx5X25hbWUiLAogICAgICAgICJlbGVtZW50VmFsdWUiOiAiJHtmYW1pbHlOYW1lfSIKICAgICAgfSwKICAgICAgewogICAgICAgICJkaWdlc3RJRCI6IDEsCiAgICAgICAgImVsZW1lbnRJZGVudGlmaWVyIjogImdpdmVuX25hbWUiLAogICAgICAgICJlbGVtZW50VmFsdWUiOiAiJHtnaXZlbk5hbWV9IgogICAgICB9LAogICAgICB7CiAgICAgICAgImRpZ2VzdElEIjogMiwKICAgICAgICAiZWxlbWVudElkZW50aWZpZXIiOiAiYmlydGhfZGF0ZSIsCiAgICAgICAgImVsZW1lbnRWYWx1ZSI6ICIke2JpcnRoRGF0ZX0iCiAgICAgIH0sCiAgICAgIHsKICAgICAgICAiZGlnZXN0SUQiOiA1LAogICAgICAgICJlbGVtZW50SWRlbnRpZmllciI6ICJkb2N1bWVudF9udW1iZXIiLAogICAgICAgICJlbGVtZW50VmFsdWUiOiAiJHtkb2N1bWVudE51bWJlcn0iCiAgICAgIH0KICAgIF0KICB9LAogICJkb2NUeXBlIjogIiR7X2RvY3R5cGV9IiwKICAidmFsaWRpdHlJbmZvIjogewogICAgInZhbGlkRnJvbSI6ICIke192YWxpZEZyb219IiwKICAgICJ2YWxpZFVudGlsIjogIiR7X3ZhbGlkVW50aWx9IiwKICAgICAic2lnbmVkIjogIiR7X3NpZ25lZH0iICAgIAogIH0KfQ==\",\n  \"credentialConfigKeyId\": \"DrivingLicenseCredentialNoBinding\",\n  \"contextURLs\": [],\n  \"credentialTypes\": [],\n  \"credentialFormat\": \"mso_mdoc\",\n  \"didUrl\": \"did:web:inji.github.io:inji-config:dev-int-inji:mock-mdl\",\n  \"keyManagerAppId\": \"CERTIFY_VC_SIGN_EC_R1\",\n  \"keyManagerRefId\": \"EC_SECP256R1_SIGN\",\n  \"signatureAlgo\": \"ES256\",\n  \"signatureCryptoSuite\": \"EcdsaSecp256r1Signature2019\",\n  \"metaDataDisplay\": [\n    {\n      \"logo\": {\n        \"uri\": \"https://example.com/logo.png\",\n        \"alt_text\": \"Driving License Logo\"\n      },\n      \"name\": \"DrivingLicenseCredential\",\n      \"locale\": \"en\",\n      \"text_color\": \"#FFFFFF\",\n      \"background_color\": \"#12107c\",\n      \"background_image\": {\n        \"uri\": \"https://inji.github.io/inji-config/logos/agro-vertias-logo.png\"\n      }\n    }\n  ],\n  \"displayOrder\": [\n    \"org.iso.18013.5.1~family_name\",\n    \"org.iso.18013.5.1~given_name\",\n    \"org.iso.18013.5.1~birth_date\",\n    \"org.iso.18013.5.1~document_number\"\n  ],\n  \"scope\": \"sample_vc_mdoc_no_binding\",\n  \"qrSettings\": [\n    {\n      \"Full Name\": \"${fullName}\",\n      \"Phone Number\": \"${mobileNumber}\",\n      \"Date Of Birth\": \"${dateOfBirth}\"\n    }\n  ],\n  \"qrSignatureAlgo\": \"EdDSA\",\n  \"msoMdocClaims\": {\n    \"org.iso.18013.5.1\": {\n      \"document_number\": {\n        \"display\": [\n          {\n            \"name\": \"Document Number\",\n            \"locale\": \"en\"\n          }\n        ]\n      },\n      \"birth_date\": {\n        \"display\": [\n          {\n            \"name\": \"Date of Birth\",\n            \"locale\": \"en\"\n          }\n        ]\n      },\n      \"given_name\": {\n        \"display\": [\n          {\n            \"name\": \"Given Name\",\n            \"locale\": \"en\"\n          }\n        ]\n      },\n      \"family_name\": {\n        \"display\": [\n          {\n            \"name\": \"Family Name\",\n            \"locale\": \"en\"\n          }\n        ]\n      }\n    }\n  },\n  \"doctype\": \"org.iso.18013.5.1.mDLNoBinding\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{certifyUrl}}/credential-configurations",
+							"host": [
+								"{{certifyUrl}}"
+							],
+							"path": [
+								"credential-configurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Nullify Holder Binding (Manual SQL - run in psql/pgAdmin, not sent by Postman)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{certifyUrl}}/actuator/health",
+							"host": [
+								"{{certifyUrl}}"
+							],
+							"path": [
+								"actuator",
+								"health"
+							]
+						},
+						"description": "This request is a no-op placeholder (hits the health endpoint) -- Postman cannot run SQL. Run the statement below manually against the certify DB before calling 'Get Credential - No Proof (Holder Binding Optional, Expect 200)':\n\n```\nUPDATE certify.credential_config\nSET cryptographic_binding_methods_supported = NULL,\n    proof_types_supported = NULL\nWHERE credential_config_key_id = 'DrivingLicenseCredentialNoBinding';\n```\n\nLocal docker example (PowerShell):\n```\nGet-Content .\\nullify_mdoc_holder_binding.sql | docker exec -i database psql -U postgres -d mosip_certify\n```\n\nTo revert, re-run 'Add New Config - No Holder Binding (Optional Binding Demo)' with a fresh credentialConfigKeyId, or re-run the CREATE flow which always re-derives non-null values from application properties."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Credential - No Proof (Holder Binding Optional, Expect 200)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Validate c_nonce\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    if(jsonData.c_nonce != null) {",
+									"        pm.environment.set(\"c_nonce\", jsonData.c_nonce);",
+									"        console.log(\"setting c_nonce\");",
+									"    }    ",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"credential_configuration_id\": \"DrivingLicenseCredentialNoBinding\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{certifyUrl}}/issuance/credential",
+							"host": [
+								"{{certifyUrl}}"
+							],
+							"path": [
+								"issuance",
+								"credential"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
