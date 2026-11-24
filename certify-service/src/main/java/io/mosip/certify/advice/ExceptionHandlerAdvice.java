@@ -19,6 +19,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -95,16 +96,31 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler imple
         String pathInfo = ((ServletWebRequest)request).getRequest().getPathInfo();
 
         if(pathInfo != null && pathInfo.startsWith("/issuance/")) {
-            return handleVCIControllerExceptions(ex);
+            return asJson(handleVCIControllerExceptions(ex));
         }
 
         if(pathInfo != null && pathInfo.startsWith("/oauth/")) {
-            return handleOAuthControllerExceptions(ex);
+            return asJson(handleOAuthControllerExceptions(ex));
         }
 
-        return handleInternalControllerException(ex);
+        return asJson(handleInternalControllerException(ex));
     }
 
+
+    @Override
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object body, HttpHeaders headers,
+                                                             HttpStatusCode statusCode, WebRequest request) {
+        return asJson(super.handleExceptionInternal(ex, body, headers, statusCode, request));
+    }
+
+    // Controller-level `produces` is dropped by Spring once an exception is resolved, so the
+    // error body would be negotiated from Accept and converter order. Pin it to JSON here.
+    private <T> ResponseEntity<T> asJson(ResponseEntity<T> response) {
+        return ResponseEntity.status(response.getStatusCode())
+                .headers(response.getHeaders())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(response.getBody());
+    }
 
     private ResponseEntity<ResponseWrapper> handleInternalControllerException(Exception ex) {
         if(ex instanceof MethodArgumentNotValidException) {
