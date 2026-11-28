@@ -22,6 +22,8 @@ import io.mosip.kernel.signature.service.impl.CoseSignatureServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
 @Slf4j
@@ -122,20 +124,16 @@ public abstract class Credential{
      * @param refID Reference ID for key retrieval
      * @param didUrl DID URL of the issuer
      */
-    public String signQRData(String payload, String qrSignAlgorithm, String appID, String refID, String didUrl, String x5uUrl) {
-        return signQRData(payload, qrSignAlgorithm, appID, refID, didUrl, x5uUrl, false);
-    }
-
     public String signQRData(String payload, String qrSignAlgorithm, String appID, String refID, String didUrl) {
-        return signQRData(payload, qrSignAlgorithm, appID, refID, didUrl, null, false);
+        return signQRData(payload, qrSignAlgorithm, appID, refID, didUrl, null);
     }
 
     /*
-     * Same as above, plus optional x5u URL and x5t cert hash header
-     * @param x5uUrl URL where the signing cert is served; null keeps x5c
-     * @param x5tEnabled true adds the SHA-256 cert hash to the COSE header
+     * RFC 9360: x5u must be paired with x5t in the protected header so the fetched cert is
+     * integrity protected. certificateUrl is built here as x5uEndpoint?applicationId=..&referenceId=..
+     * x5c is only a fallback when no endpoint is available.
      */
-    public String signQRData(String payload, String qrSignAlgorithm, String appID, String refID, String didUrl, String x5uUrl, boolean x5tEnabled) {
+    public String signQRData(String payload, String qrSignAlgorithm, String appID, String refID, String didUrl, String x5uEndpoint) {
         CWTSignRequestDto cwtSignRequestDto = new CWTSignRequestDto();
         cwtSignRequestDto.setClaim169Payload(payload);
         cwtSignRequestDto.setApplicationId(appID);
@@ -144,16 +142,10 @@ public abstract class Credential{
         cwtSignRequestDto.setIssuer(didUrl);
 
         Map<String, Object> protectedHeaders = new HashMap<>();
-        boolean hasUrl = x5uUrl != null && !x5uUrl.isBlank();
-        // x5u and x5t replace x5c. If neither is on, x5c stays
-        // so the verifier still finds the cert like before.
-        if (hasUrl) {
-            protectedHeaders.put("certificateUrl", x5uUrl);
-        }
-        if (x5tEnabled) {
+        if (StringUtils.hasText(x5uEndpoint)) {
+            protectedHeaders.put("certificateUrl", buildX5uUrl(x5uEndpoint, appID, refID));
             protectedHeaders.put("includeCertificateHash", true);
-        }
-        if (!hasUrl && !x5tEnabled) {
+        } else {
             protectedHeaders.put("x5c", true);
         }
         protectedHeaders.put("kid", true);
@@ -163,6 +155,15 @@ public abstract class Credential{
         CoseSignResponseDto coseSignResponseDto = coseSignatureService.cwtSign(cwtSignRequestDto);
 
         return coseSignResponseDto.getSignedData();
+    }
+
+    private static String buildX5uUrl(String endpoint, String appID, String refID) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(endpoint)
+                .queryParam(Constants.APPLICATION_ID, appID);
+        if (StringUtils.hasText(refID)) {
+            builder.queryParam(Constants.REFERENCE_ID, refID);
+        }
+        return builder.build().encode().toUriString();
     }
 
 }
